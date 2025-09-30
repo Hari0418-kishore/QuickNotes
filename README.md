@@ -1,0 +1,2 @@
+# QuickNotes
+Notes Generator

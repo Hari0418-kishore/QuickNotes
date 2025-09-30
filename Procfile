@@ -1,1 +1,1 @@
-web: gunicorn StudentNotes.wsgi
+web: gunicorn StudentNotes.wsgi --timeout 120

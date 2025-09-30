@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Notes Generator</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #141e30, #243b55);
+        color: #f0f0f0;
+        line-height: 1.6;
+    }
+
+    header {
+        padding: 30px;
+        text-align: center;
+        font-size: 2.5em;
+        font-weight: 700;
+        background: linear-gradient(to right, #00ffe5, #00bcd4);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0px 0px 15px rgba(0, 255, 229, 0.3);
+        animation: fadeInDown 1s ease-out;
+    }
+
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-40px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 30px;
+        background: rgba(20, 20, 40, 0.9);
+        border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        animation: fadeIn 1.2s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    form {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 35px;
+    }
+
+    input[type="text"] {
+        width: 70%;
+        padding: 14px 18px;
+        border-radius: 10px 0 0 10px;
+        border: none;
+        font-size: 1em;
+        outline: none;
+        background: #1c2b3a;
+        color: #fff;
+    }
+
+    button[type="submit"] {
+        padding: 14px 25px;
+        background: linear-gradient(to right, #00ffe5, #00bcd4);
+        color: #1c1c1c;
+        border: none;
+        border-radius: 0 10px 10px 0;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+        transform: translateY(-3px);
+        box-shadow: 0px 5px 15px rgba(0, 255, 229, 0.4);
+    }
+
+    h1, h2, h3 {
+        color: #ffdd57;
+        margin-top: 20px;
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    h1 { font-size: 28px; border-bottom: 2px solid #ffdd57; padding-bottom: 5px; }
+    h2 { font-size: 22px; text-decoration: underline; }
+    h3 { font-size: 18px; }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    p { margin: 10px 0; }
+    .note {
+        color: #ff4c4c;
+        font-weight: bold;
+        background: rgba(255,76,76,0.15);
+        padding: 8px 12px;
+        border-left: 4px solid #ff4c4c;
+        margin: 12px 0;
+        border-radius: 8px;
+        animation: pulseNote 1.5s infinite alternate;
+    }
+
+    @keyframes pulseNote {
+        from { background: rgba(255,76,76,0.1); }
+        to { background: rgba(255,76,76,0.25); }
+    }
+
+    ul { margin: 8px 0 8px 25px; }
+    li { margin: 6px 0; }
+
+    b { color: #00ffe5; }
+
+    .downloads {
+        margin-top: 35px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .downloads a {
+        padding: 14px 22px;
+        background: linear-gradient(to right, #ffdd57, #ffb300);
+        color: #1c1c1c;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: bold;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .downloads a:hover {
+        transform: translateY(-4px);
+        box-shadow: 0px 6px 20px rgba(255, 221, 87, 0.5);
+    }
+
+    /* Loading Overlay */
+    #loading-overlay {
+        display: none;
+        position: fixed;
+        top:0; left:0;
+        width:100%; height:100%;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .loading-text {
+        font-size: 1.6em;
+        margin-top: 25px;
+        color: #00ffe5;
+        animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+        50% { opacity: 0.6; }
+    }
+
+    .dot-pulse {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .dot {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #00ffe5;
+        animation: bounce 1s infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+        0%, 80%, 100% { transform: scale(0.6); opacity: 0.6; }
+        40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Responsive */
+    @media screen and (max-width: 600px) {
+        input[type="text"] { width: 60%; }
+        button[type="submit"] { padding: 12px 16px; }
+    }
+</style>
+</head>
+<body>
+<header>✨ Student Notes Generator ✨</header>
+
+<div id="loading-overlay">
+    <div class="dot-pulse">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+    <div class="loading-text">Generating notes... please wait!</div>
+</div>
+
+<div class="container">
+    <!-- Search Form -->
+    <form id="notes-form" method="get" action="">
+        <input type="text" name="topic" placeholder="Enter topic..." value="{{ topic }}" required>
+        <button type="submit">Generate 🚀</button>
+    </form>
+
+    {% if notes %}
+        <h2>Notes for "{{ topic }}"</h2>
+        <div id="notes-content">
+            {% for item in notes %}
+                {% if item.type == "heading" %}
+                    <h1>{{ item.text|safe }}</h1>
+                {% elif item.type == "subheading" %}
+                    <h2>{{ item.text|safe }}</h2>
+                {% elif item.type == "subsubheading" %}
+                    <h3>{{ item.text|safe }}</h3>
+                {% elif item.type == "paragraph" %}
+                    <p>{{ item.text|safe }}</p>
+                {% elif item.type == "note" %}
+                    <p class="note">⚠ {{ item.text|safe }}</p>
+                {% elif item.type == "list" %}
+                    <ul>
+                        <li>{{ item.text|safe }}</li>
+                    </ul>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- Download buttons -->
+        <div class="downloads">
+            <a href="{% url 'download_pdf' %}?topic={{ topic }}&notes={{ notes_text|urlencode }}">📄 Download PDF</a>
+            <a href="{% url 'download_word' %}?topic={{ topic }}&notes={{ notes_text|urlencode }}">📝 Download Word</a>
+            <a href="{% url 'download_ppt' %}?topic={{ topic }}&notes={{ notes_text|urlencode }}">📊 Download PPT</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    const form = document.getElementById('notes-form');
+    const overlay = document.getElementById('loading-overlay');
+
+    // Show loader on submit
+    form.addEventListener('submit', () => {
+        overlay.style.display = 'flex';
+    });
+
+    // Hide loader once page loads back with notes
+    window.addEventListener('load', () => {
+        overlay.style.display = 'none';
+    });
+</script>
+
+</body>
+</html>

@@ -2,36 +2,52 @@
 from django.shortcuts import render, redirect
 from .utils import generate_notes_gemini, generate_pdf, generate_word, generate_ppt
 
+from django.shortcuts import render
+import logging
+from .utils import generate_notes_gemini
+
+# Set up logging
+logger = logging.getLogger(__name__)
+
 def search_notes(request):
     topic = request.GET.get('topic', '').strip()
     notes_content = []
     notes_text = ""
 
     if topic:
-        # structured notes (list of dicts)
-        notes_content = generate_notes_gemini(topic)
+        try:
+            # Structured notes (list of dicts) from Gemini
+            notes_content = generate_notes_gemini(topic)
 
-        # Store structured notes in session for downloads (preferred)
-        request.session['topic'] = topic
-        request.session['notes'] = notes_content
+            if not notes_content:
+                notes_content = [{"type": "note", "text": "No notes generated."}]
 
-        # Convert structured notes to plain text string for fallback downloads / sharing
-        lines = []
-        for item in notes_content:
-            t = item.get('text', '').strip()
-            if not t:
-                continue
-            if item.get('type') == 'note':
-                lines.append(f"NOTE: {t}")
-            elif item.get('type') == 'list':
-                # simple bullet marker
-                level = item.get('level', 0)
-                indent = "  " * level
-                lines.append(f"{indent}• {t}")
-            else:
-                lines.append(t)
-        notes_text = "\n".join(lines)
-        request.session['notes_text'] = notes_text
+            # Store structured notes in session for downloads
+            request.session['topic'] = topic
+            request.session['notes'] = notes_content
+
+            # Convert structured notes to plain text for fallback downloads / sharing
+            lines = []
+            for item in notes_content:
+                t = item.get('text', '').strip()
+                if not t:
+                    continue
+                if item.get('type') == 'note':
+                    lines.append(f"NOTE: {t}")
+                elif item.get('type') == 'list':
+                    level = item.get('level', 0)
+                    indent = "  " * level
+                    lines.append(f"{indent}• {t}")
+                else:
+                    lines.append(t)
+            notes_text = "\n".join(lines)
+            request.session['notes_text'] = notes_text
+
+        except Exception as e:
+            # Log the error and show fallback message
+            logger.error(f"Gemini API error for topic '{topic}': {e}")
+            notes_content = [{"type": "note", "text": "Unable to generate notes right now. Please try again later."}]
+            notes_text = "Unable to generate notes at this time."
 
     return render(request, 'notes_template.html', {
         'topic': topic,
